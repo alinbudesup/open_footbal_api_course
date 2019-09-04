@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+require 'csv'
 
 class TeamsController < ApplicationController
-  before_action :set_team, only: %i[update show destroy download_logo]
+  before_action :set_team, only: %i[update show destroy download_logo eee_logos]
 
   def index
     @teams = Team.all
@@ -44,6 +45,21 @@ class TeamsController < ApplicationController
     end
   end
 
+  def bulk
+    file = CSV.read(csv_params[:csv].path)
+    # puts item[0][0]
+    CsvUtilsJob.perform_later(file)
+  end
+
+  def eee_logos
+    @logos_arr = []
+    @team.logos.each do |logo|
+      @logos_arr << logo.variant(resize: '360x180')
+      @logos_arr << logo.variant(resize: '640x640')
+    end
+     @logos_arr
+  end
+
   private
 
   def permitted_params
@@ -51,7 +67,11 @@ class TeamsController < ApplicationController
   end
 
   def team_params
-    params.require(:team).permit(:name, :abbreviation, :logo)
+    params.require(:team).permit(:name, :abbreviation, :logos)
+  end
+
+  def csv_params
+    params.permit(:csv)
   end
 
   def set_team

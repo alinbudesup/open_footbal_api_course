@@ -10,4 +10,13 @@ class TeamMailer < ApplicationMailer
       subject: 'Teams'
     )
   end
+
+  def send_rep_with_managers_and_teams(count)
+    @created = count
+    mail(
+    to: 'address@gmail.com',
+    bcc: '',
+    subject: 'Managers and teams'
+    )
+  end
 end

@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
   resources :teams do
     get :download_logo, on: :member
+    get :eee_logos, on: :member
   end
-
+  post 'bulk', to: 'teams#bulk'
+  resources :players, only:  %i[index show create update]
   resources :managers, only: %i[index show create update]
 end
